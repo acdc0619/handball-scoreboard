@@ -2,15 +2,12 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#111111">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="ハンドボール得点板">
-
-  <link rel="manifest" href="manifest.json">
 
   <title>ハンドボール得点板</title>
+
+  <link rel="manifest" href="manifest.json">
 
   <style>
     * {
@@ -26,6 +23,7 @@
       overflow: hidden;
       background: #111;
       font-family: Arial, sans-serif;
+      user-select: none;
     }
 
     body {
@@ -34,186 +32,230 @@
 
     .app {
       width: 100%;
-      height: 100%;
+      height: 100dvh;
       display: grid;
-      grid-template-rows: 60% 20% 20%;
-      padding: 8px;
-      gap: 8px;
+      grid-template-columns: 6fr 2fr 2fr;
     }
 
     /* =========================
        得点エリア
-    ========================= */
+       ========================= */
 
     .teams {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      direction: ltr;
+    }
+
+    .teams.second-half {
+      direction: rtl;
     }
 
     .team {
-      min-width: 0;
-      min-height: 0;
+      direction: ltr;
+      flex: 1;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      border-radius: 12px;
-      user-select: none;
-      cursor: pointer;
+      text-align: center;
+      touch-action: manipulation;
     }
 
     .home {
       background: #064b91;
     }
 
-    .away {
+    .awe y {
+      background: #8b1111;
+    }
+
+    .awe y {
       background: #8b1111;
     }
 
     .team-name {
-      font-size: clamp(24px, 5vw, 50px);
+      font-size: clamp(24px, 4vw, 48px);
       font-weight: bold;
       margin-bottom: 10px;
     }
 
     .score {
-      font-size: clamp(70px, 18vw, 180px);
-      line-height: 1;
+      font-size: clamp(100px, 18vw, 260px);
+      line-height: 0.9;
       font-weight: bold;
-    }
-
-    /* =========================
-       後半は左右を反転
-    ========================= */
-
-    .teams.second-half {
-      direction: rtl;
-    }
-
-    .teams.second-half .team {
-      direction: ltr;
     }
 
     /* =========================
        タイマーエリア
-    ========================= */
+       ========================= */
 
     .timer-area {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 150px;
-      gap: 8px;
-    }
-
-    .timer-box {
-      min-width: 0;
-      min-height: 0;
-      background: #222;
-      border-radius: 12px;
-
+      background: #181818;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 10px;
+      gap: 14px;
     }
 
     .period {
-      font-size: clamp(20px, 4vw, 36px);
+      font-size: clamp(18px, 2.2vw, 30px);
       font-weight: bold;
-      margin-bottom: 4px;
+      text-align: center;
     }
 
     .timer {
-      font-size: clamp(50px, 11vw, 110px);
-      line-height: 1;
+      font-size: clamp(45px, 7vw, 100px);
       font-weight: bold;
-      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .settings {
-      min-width: 0;
-      min-height: 0;
-      background: #222;
-      border-radius: 12px;
-
+      width: min(90%, 260px);
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 4px;
-      padding: 8px;
+      gap: 8px;
     }
 
     .settings-title {
-      font-size: 14px;
+      text-align: center;
+      font-size: 18px;
       font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .setting-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      text-align: center;
+      color: #ccc;
     }
 
     .time-input {
       width: 100%;
-      height: 34px;
-      border: none;
+      min-width: 0;
+      padding: 7px 4px;
+      border: 1px solid #555;
       border-radius: 6px;
-      text-align: center;
+      background: #292929;
+      color: white;
       font-size: 18px;
-      font-weight: bold;
+      text-align: center;
     }
 
-    .time-label {
-      font-size: 11px;
+    .settings-button {
+      width: 100%;
+      margin-top: 4px;
+      padding: 9px 6px;
+      border: none;
+      border-radius: 7px;
+      background: #555;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .settings-button:active {
+      transform: scale(0.97);
     }
 
     /* =========================
        操作ボタン
-    ========================= */
+       ========================= */
 
     .controls {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      padding: 10px;
     }
 
     .control-button {
+      width: min(85%, 220px);
+      padding: 16px 8px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #333;
       color: white;
-      font-size: clamp(18px, 4vw, 36px);
+      font-size: clamp(18px, 2.2vw, 30px);
       font-weight: bold;
       cursor: pointer;
     }
 
     .control-button:active {
-      background: #555;
+      transform: scale(0.96);
     }
 
     /* =========================
-       横画面
-    ========================= */
+       スマホ縦画面
+       ========================= */
 
-    @media (orientation: landscape) {
-
-      .timer-area {
-        grid-template-columns: minmax(0, 1fr) 135px;
+    @media (orientation: portrait) {
+      .app {
+        grid-template-columns: 6fr 2fr 2fr;
       }
 
       .team-name {
-        font-size: clamp(20px, 4vw, 40px);
+        font-size: clamp(18px, 5vw, 36px);
       }
 
       .score {
-        font-size: clamp(60px, 17vw, 170px);
-      }
-
-      .period {
-        font-size: clamp(18px, 3vw, 30px);
+        font-size: clamp(70px, 22vw, 180px);
       }
 
       .timer {
-        font-size: clamp(45px, 9vw, 100px);
+        font-size: clamp(36px, 9vw, 70px);
+      }
+
+      .settings {
+        width: 94%;
+      }
+
+      .settings-title {
+        font-size: 14px;
+      }
+
+      .setting-label {
+        font-size: 10px;
+      }
+
+      .time-input {
+        font-size: 14px;
+        padding: 5px 2px;
+      }
+
+      .settings-button {
+        font-size: 12px;
+        padding: 7px 3px;
+      }
+
+      .control-button {
+        width: 90%;
+        padding: 12px 4px;
+        font-size: 16px;
+      }
+
+      .controls {
+        gap: 9px;
+      }
+
+      .timer-area {
+        gap: 8px;
+        padding: 5px;
       }
     }
   </style>
@@ -224,48 +266,44 @@
   <div class="app">
 
     <!-- =========================
-         得点
-    ========================= -->
+         HOME / AWEY
+         ========================= -->
 
     <div class="teams" id="teams">
 
       <div
         class="team home"
-        onclick="scoreTap('home')"
+        id="homeTeam"
+        onclick="handleScoreTap('home')"
       >
         <div class="team-name">HOME</div>
         <div class="score" id="homeScore">0</div>
       </div>
 
       <div
-        class="team away"
-        onclick="scoreTap('away')"
+        class="team awe y"
+        id="awe yTeam"
+        onclick="handleScoreTap('awe y')"
       >
         <div class="team-name">AWEY</div>
-        <div class="score" id="awayScore">0</div>
+        <div class="score" id="awe yScore">0</div>
       </div>
 
     </div>
 
-
     <!-- =========================
          タイマー
-    ========================= -->
+         ========================= -->
 
     <div class="timer-area">
 
-      <div class="timer-box">
-
-        <div class="period" id="period">
-          前半
-        </div>
-
-        <div class="timer" id="timer">
-          25:00
-        </div>
-
+      <div class="period" id="periodDisplay">
+        前半
       </div>
 
+      <div class="timer" id="timerDisplay">
+        25:00
+      </div>
 
       <div class="settings">
 
@@ -273,53 +311,63 @@
           時間設定
         </div>
 
-        <div class="time-label">
-          分
+        <div class="setting-row">
+          <div class="setting-label">試合 分</div>
+          <div class="setting-label">試合 秒</div>
         </div>
 
-        <input
-          id="minutesInput"
-          class="time-input"
-          type="number"
-          min="0"
-          max="99"
-          value="25"
-        >
+        <div class="setting-row">
+          <input
+            id="minutesInput"
+            class="time-input"
+            type="number"
+            min="0"
+            max="99"
+            value="25"
+          >
 
-        <div class="time-label">
-          秒
+          <input
+            id="secondsInput"
+            class="time-input"
+            type="number"
+            min="0"
+            max="59"
+            value="0"
+          >
         </div>
 
-        <input
-          id="secondsInput"
-          class="time-input"
-          type="number"
-          min="0"
-          max="59"
-          value="0"
-        >
-
-        <div class="time-label">
-          ハーフタイム
+        <div class="setting-row">
+          <div class="setting-label">ハーフタイム 分</div>
+          <div></div>
         </div>
 
-        <input
-          id="halftimeInput"
-          class="time-input"
-          type="number"
-          min="0"
-          max="99"
-          value="10"
+        <div class="setting-row">
+          <input
+            id="halftimeInput"
+            class="time-input"
+            type="number"
+            min="0"
+            max="99"
+            value="10"
+          >
+
+          <div></div>
+        </div>
+
+        <button
+          class="settings-button"
+          onclick="applySettings()"
         >
+          設定を反映
+        </button>
 
       </div>
 
     </div>
 
-
     <!-- =========================
          操作
-    ========================= -->
+         ========================= -->
 
     <div class="controls">
 
@@ -339,7 +387,7 @@
 
       <button
         class="control-button"
-        onclick="resetTimer()"
+        onclick="resetGame()"
       >
         RESET
       </button>
@@ -348,365 +396,315 @@
 
   </div>
 
-
   <script>
-
     /* =========================
-       得点処理
-    ========================= */
+       得点
+       ========================= */
 
-    let scores = {
-      home: 0,
-      away: 0
-    };
+    let homeScore = 0;
+    let awe yScore = 0;
 
-    let lastTap = {
-      home: 0,
-      away: 0
-    };
+    let homeTapTimer = null;
+    let awe yTapTimer = null;
 
-
-    function scoreTap(team) {
-
-      const now = Date.now();
-
-      if (now - lastTap[team] < 300) {
-
-        scores[team] = Math.max(
-          0,
-          scores[team] - 1
-        );
-
-      } else {
-
-        scores[team]++;
-
-      }
-
-      lastTap[team] = now;
-
-      document.getElementById(
-        team + 'Score'
-      ).textContent = scores[team];
+    function updateScores() {
+      document.getElementById("homeScore").textContent = homeScore;
+      document.getElementById("awe yScore").textContent = awe yScore;
     }
 
+    function handleScoreTap(team) {
+      if (team === "home") {
+        if (homeTapTimer !== null) {
+          clearTimeout(homeTapTimer);
+          homeTapTimer = null;
+
+          if (homeScore > 0) {
+            homeScore--;
+          }
+
+          updateScores();
+        } else {
+          homeTapTimer = setTimeout(() => {
+            homeScore++;
+            updateScores();
+            homeTapTimer = null;
+          }, 250);
+        }
+      }
+
+      if (team === "awe y") {
+        if (awe yTapTimer !== null) {
+          clearTimeout(awe yTapTimer);
+          awe yTapTimer = null;
+
+          if (awe yScore > 0) {
+            awe yScore--;
+          }
+
+          updateScores();
+        } else {
+          awe yTapTimer = setTimeout(() => {
+            awe yScore++;
+            updateScores();
+            awe yTapTimer = null;
+          }, 250);
+        }
+      }
+    }
 
     /* =========================
        タイマー
-    ========================= */
-
-    let timerInterval = null;
-
-    let currentPeriod = 'first';
+       ========================= */
 
     let remainingSeconds = 25 * 60;
+    let timerInterval = null;
+    let timerRunning = false;
 
+    let currentPeriod = "first";
 
     function formatTime(totalSeconds) {
-
-      const minutes =
-        Math.floor(totalSeconds / 60);
-
-      const seconds =
-        totalSeconds % 60;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
 
       return (
-        String(minutes).padStart(2, '0')
-        + ':'
-        + String(seconds).padStart(2, '0')
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
       );
     }
 
-
-    /* =========================
-       前半・後半の左右変更
-    ========================= */
-
-    function updateTeamSides() {
-
-      const teams =
-        document.getElementById('teams');
-
-      if (currentPeriod === 'second') {
-
-        teams.classList.add('second-half');
-
-      } else {
-
-        teams.classList.remove('second-half');
-
-      }
-    }
-
-
     function updateTimerDisplay() {
-
-      document.getElementById(
-        'timer'
-      ).textContent =
+      document.getElementById("timerDisplay").textContent =
         formatTime(remainingSeconds);
 
-
-      const periodText = {
-        first: '前半',
-        halftime: 'ハーフタイム',
-        second: '後半',
-        finished: '試合終了'
-      };
-
-
-      document.getElementById(
-        'period'
-      ).textContent =
-        periodText[currentPeriod];
-
-
+      updatePeriodDisplay();
       updateTeamSides();
     }
 
+    function updatePeriodDisplay() {
+      const display = document.getElementById("periodDisplay");
 
-    /* =========================
-       試合時間取得
-    ========================= */
-
-    function getMainTime() {
-
-      let minutes = Number(
-        document.getElementById(
-          'minutesInput'
-        ).value
-      );
-
-      let seconds = Number(
-        document.getElementById(
-          'secondsInput'
-        ).value
-      );
-
-
-      if (!Number.isFinite(minutes)) {
-        minutes = 25;
+      if (currentPeriod === "first") {
+        display.textContent = "前半";
+      } else if (currentPeriod === "halftime") {
+        display.textContent = "ハーフタイム";
+      } else if (currentPeriod === "second") {
+        display.textContent = "後半";
+      } else if (currentPeriod === "finished") {
+        display.textContent = "試合終了";
       }
+    }
 
-      if (!Number.isFinite(seconds)) {
-        seconds = 0;
+    function updateTeamSides() {
+      const teams = document.getElementById("teams");
+
+      if (currentPeriod === "second") {
+        teams.classList.add("second-half");
+      } else {
+        teams.classList.remove("second-half");
       }
+    }
 
+    function getGameTime() {
+      const minutes =
+        Math.max(
+          0,
+          Math.min(
+            99,
+            Number(document.getElementById("minutesInput").value) || 0
+          )
+        );
 
-      minutes = Math.max(
-        0,
-        Math.min(
-          99,
-          Math.floor(minutes)
-        )
-      );
-
-
-      seconds = Math.max(
-        0,
-        Math.min(
-          59,
-          Math.floor(seconds)
-        )
-      );
-
+      const seconds =
+        Math.max(
+          0,
+          Math.min(
+            59,
+            Number(document.getElementById("secondsInput").value) || 0
+          )
+        );
 
       return minutes * 60 + seconds;
     }
 
-
-    /* =========================
-       ハーフタイム時間取得
-    ========================= */
-
     function getHalftimeTime() {
-
-      let minutes = Number(
-        document.getElementById(
-          'halftimeInput'
-        ).value
-      );
-
-
-      if (!Number.isFinite(minutes)) {
-        minutes = 10;
-      }
-
-
-      minutes = Math.max(
-        0,
-        Math.min(
-          99,
-          Math.floor(minutes)
-        )
-      );
-
+      const minutes =
+        Math.max(
+          0,
+          Math.min(
+            99,
+            Number(document.getElementById("halftimeInput").value) || 0
+          )
+        );
 
       return minutes * 60;
     }
 
-
     /* =========================
-       START
-    ========================= */
+       設定を反映
+       ========================= */
 
-    function startTimer() {
+    function applySettings() {
+      const gameTime = getGameTime();
+      const halftimeTime = getHalftimeTime();
 
-      if (timerInterval !== null) {
+      document.getElementById("minutesInput").value =
+        Math.floor(gameTime / 60);
+
+      document.getElementById("secondsInput").value =
+        gameTime % 60;
+
+      document.getElementById("halftimeInput").value =
+        Math.floor(halftimeTime / 60);
+
+      /*
+       * タイマー動作中は変更しない
+       */
+      if (timerRunning) {
         return;
       }
 
-
-      if (currentPeriod === 'finished') {
-        return;
+      /*
+       * 前半・後半なら試合時間を反映
+       */
+      if (
+        currentPeriod === "first" ||
+        currentPeriod === "second"
+      ) {
+        remainingSeconds = gameTime;
       }
 
-
-      timerInterval = setInterval(
-        timerTick,
-        1000
-      );
-    }
-
-
-    /* =========================
-       PAUSE
-    ========================= */
-
-    function pauseTimer() {
-
-      if (timerInterval !== null) {
-
-        clearInterval(timerInterval);
-
-        timerInterval = null;
+      /*
+       * ハーフタイムなら
+       * ハーフタイム時間を反映
+       */
+      if (currentPeriod === "halftime") {
+        remainingSeconds = halftimeTime;
       }
-    }
-
-
-    /* =========================
-       タイマー処理
-    ========================= */
-
-    function timerTick() {
-
-      if (remainingSeconds > 0) {
-
-        remainingSeconds--;
-
-        updateTimerDisplay();
-
-        return;
-      }
-
-
-      /* =========================
-         前半終了
-      ========================= */
-
-      if (currentPeriod === 'first') {
-
-        pauseTimer();
-
-        currentPeriod = 'halftime';
-
-        remainingSeconds =
-          getHalftimeTime();
-
-        updateTimerDisplay();
-
-        return;
-      }
-
-
-      /* =========================
-         ハーフタイム終了
-      ========================= */
-
-      if (currentPeriod === 'halftime') {
-
-        pauseTimer();
-
-        currentPeriod = 'second';
-
-        remainingSeconds =
-          getMainTime();
-
-        updateTimerDisplay();
-
-        return;
-      }
-
-
-      /* =========================
-         後半終了
-      ========================= */
-
-      if (currentPeriod === 'second') {
-
-        pauseTimer();
-
-        currentPeriod = 'finished';
-
-        remainingSeconds = 0;
-
-        updateTimerDisplay();
-
-        return;
-      }
-    }
-
-
-    /* =========================
-       RESET
-    ========================= */
-
-    function resetTimer() {
-
-      pauseTimer();
-
-      currentPeriod = 'first';
-
-      remainingSeconds =
-        getMainTime();
 
       updateTimerDisplay();
     }
 
+    /* =========================
+       START
+       ========================= */
+
+    function startTimer() {
+      if (timerRunning) {
+        return;
+      }
+
+      if (currentPeriod === "finished") {
+        return;
+      }
+
+      timerRunning = true;
+
+      timerInterval = setInterval(() => {
+
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          updateTimerDisplay();
+          return;
+        }
+
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerRunning = false;
+
+        /*
+         * 前半終了
+         */
+        if (currentPeriod === "first") {
+
+          currentPeriod = "halftime";
+          remainingSeconds = getHalftimeTime();
+
+          updateTimerDisplay();
+
+          return;
+        }
+
+        /*
+         * ハーフタイム終了
+         */
+        if (currentPeriod === "halftime") {
+
+          currentPeriod = "second";
+          remainingSeconds = getGameTime();
+
+          updateTimerDisplay();
+
+          return;
+        }
+
+        /*
+         * 後半終了
+         */
+        if (currentPeriod === "second") {
+
+          currentPeriod = "finished";
+          remainingSeconds = 0;
+
+          updateTimerDisplay();
+
+          return;
+        }
+
+      }, 1000);
+    }
+
+    /* =========================
+       PAUSE
+       ========================= */
+
+    function pauseTimer() {
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      timerRunning = false;
+    }
+
+    /* =========================
+       RESET
+       ========================= */
+
+    function resetGame() {
+
+      pauseTimer();
+
+      homeScore = 0;
+      awe yScore = 0;
+
+      currentPeriod = "first";
+
+      remainingSeconds = getGameTime();
+
+      updateScores();
+      updateTimerDisplay();
+    }
 
     /* =========================
        初期表示
-    ========================= */
+       ========================= */
 
+    updateScores();
     updateTimerDisplay();
 
-
     /* =========================
-       Service Worker
-    ========================= */
+       PWA
+       ========================= */
 
-    if ('serviceWorker' in navigator) {
-
-      window.addEventListener(
-        'load',
-        function() {
-
-          navigator.serviceWorker.register(
-            'sw.js'
-          ).catch(function(error) {
-
-            console.log(
-              'Service Worker registration failed:',
-              error
-            );
-
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .catch(error => {
+            console.log("Service Worker registration failed:", error);
           });
-
-        }
-      );
-
+      });
     }
-
   </script>
 
 </body>
