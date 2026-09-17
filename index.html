@@ -2,12 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111111">
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="ハンドボール得点板">
@@ -25,68 +21,47 @@
     html,
     body {
       margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
       overflow: hidden;
-      touch-action: manipulation;
+      background: #111;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      color: white;
     }
 
     .app {
       width: 100%;
-      height: 100vh;
-      height: 100dvh;
-
+      height: 100%;
       display: grid;
-
       grid-template-rows: 60% 20% 20%;
-
       padding: 8px;
       gap: 8px;
     }
 
     /* =========================
-       得点部分 60%
-       ========================= */
+       得点エリア
+    ========================= */
 
     .teams {
       min-height: 0;
-      min-width: 0;
-
       display: grid;
-
       grid-template-columns: 1fr 1fr;
-
       gap: 8px;
     }
 
     .team {
       min-width: 0;
       min-height: 0;
-
-      border-radius: 16px;
-
-      padding: 10px;
-
       display: flex;
       flex-direction: column;
-
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-
-      cursor: pointer;
+      border-radius: 12px;
       user-select: none;
-
-      touch-action: manipulation;
+      cursor: pointer;
     }
 
     .home {
@@ -97,431 +72,150 @@
       background: #8b1111;
     }
 
-    .team:active {
-      filter: brightness(1.2);
-    }
-
     .team-name {
-      width: 100%;
-
-      text-align: center;
-
-      font-size: clamp(20px, 4vw, 32px);
-
+      font-size: clamp(24px, 5vw, 50px);
       font-weight: bold;
-
-      padding: 4px;
-
-      pointer-events: none;
+      margin-bottom: 10px;
     }
 
     .score {
-      font-size: clamp(80px, 23vw, 230px);
-
-      line-height: 0.9;
-
+      font-size: clamp(70px, 18vw, 180px);
+      line-height: 1;
       font-weight: bold;
-
-      pointer-events: none;
-    }
-
-    .hint {
-      font-size: clamp(10px, 2.3vw, 14px);
-
-      opacity: 0.65;
-
-      text-align: center;
-
-      pointer-events: none;
     }
 
     /* =========================
-       タイマー部分 20%
-       ========================= */
+       後半は左右を反転
+    ========================= */
+
+    .teams.second-half {
+      direction: rtl;
+    }
+
+    .teams.second-half .team {
+      direction: ltr;
+    }
+
+    /* =========================
+       タイマーエリア
+    ========================= */
 
     .timer-area {
       min-height: 0;
-      min-width: 0;
-
-      background: #151b21;
-
-      border-radius: 16px;
-
-      padding: 8px;
-
       display: grid;
-
       grid-template-columns: minmax(0, 1fr) 150px;
-
       gap: 8px;
-
-      align-items: stretch;
     }
 
-    .timer-main {
+    .timer-box {
       min-width: 0;
       min-height: 0;
+      background: #222;
+      border-radius: 12px;
 
       display: flex;
-
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+    }
 
-      overflow: hidden;
+    .period {
+      font-size: clamp(20px, 4vw, 36px);
+      font-weight: bold;
+      margin-bottom: 4px;
     }
 
     .timer {
-      font-family: monospace;
-
-      font-size: clamp(45px, 11vw, 120px);
-
-      font-weight: bold;
-
+      font-size: clamp(50px, 11vw, 110px);
       line-height: 1;
-
-      white-space: nowrap;
-
-      pointer-events: none;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
     }
 
-    /* =========================
-       試合時間設定
-       ========================= */
-
-    .timer-settings {
-      width: 150px;
-      min-width: 150px;
-
-      border: 2px solid #3b424a;
-
-      border-radius: 14px;
-
-      padding: 6px;
+    .settings {
+      min-width: 0;
+      min-height: 0;
+      background: #222;
+      border-radius: 12px;
 
       display: flex;
-
       flex-direction: column;
-
       justify-content: center;
-
       align-items: center;
-
       gap: 4px;
-
-      overflow: hidden;
+      padding: 8px;
     }
 
     .settings-title {
-      width: 100%;
-
-      text-align: center;
-
-      font-size: 15px;
-
+      font-size: 14px;
       font-weight: bold;
-    }
-
-    .time-row {
-      width: 100%;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-
-      gap: 4px;
     }
 
     .time-input {
-      width: 72px;
-
-      height: 34px;
-
-      border: 2px solid #555;
-
-      border-radius: 8px;
-
-      background: #3a4047;
-
-      color: white;
-
-      text-align: center;
-
-      font-size: 19px;
-
-      font-weight: bold;
-
-      outline: none;
-    }
-
-    .time-input:focus {
-      border-color: #aaa;
-    }
-
-    .time-unit {
-      font-size: 13px;
-
-      font-weight: bold;
-    }
-
-    .set-time-button {
       width: 100%;
-
       height: 34px;
-
       border: none;
-
-      border-radius: 8px;
-
-      background: #555d66;
-
-      color: white;
-
-      font-size: 14px;
-
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
       font-weight: bold;
-
-      cursor: pointer;
     }
 
-    .set-time-button:active {
-      transform: scale(0.96);
-
-      filter: brightness(1.2);
+    .time-label {
+      font-size: 11px;
     }
 
     /* =========================
-       START / PAUSE / RESET 20%
-       ========================= */
+       操作ボタン
+    ========================= */
 
-    .control-area {
+    .controls {
       min-height: 0;
-      min-width: 0;
-
       display: grid;
-
-      grid-template-columns: repeat(3, 1fr);
-
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
     }
 
     .control-button {
-      width: 100%;
-      height: 100%;
-
-      min-height: 0;
-
       border: none;
-
-      border-radius: 14px;
-
+      border-radius: 12px;
+      background: #333;
       color: white;
-
-      font-size: clamp(18px, 4vw, 30px);
-
+      font-size: clamp(18px, 4vw, 36px);
       font-weight: bold;
-
       cursor: pointer;
-
-      touch-action: manipulation;
     }
 
     .control-button:active {
-      transform: scale(0.97);
-
-      filter: brightness(1.15);
-    }
-
-    .start {
-      background: #159447;
-    }
-
-    .pause {
-      background: #b07a08;
-    }
-
-    .reset {
-      background: #c3212b;
+      background: #555;
     }
 
     /* =========================
-       横向き
-       ========================= */
+       横画面
+    ========================= */
 
     @media (orientation: landscape) {
 
-      .app {
-        padding: 6px;
-        gap: 6px;
-      }
-
-      .teams {
-        gap: 6px;
-      }
-
-      .team {
-        padding: 6px;
-      }
-
-      .team-name {
-        font-size: clamp(16px, 3vw, 26px);
-        padding: 2px;
-      }
-
-      .score {
-        font-size: clamp(65px, 17vw, 180px);
-      }
-
-      .hint {
-        font-size: 10px;
-      }
-
       .timer-area {
-        padding: 6px;
-
         grid-template-columns: minmax(0, 1fr) 135px;
-
-        gap: 6px;
-      }
-
-      .timer {
-        font-size: clamp(40px, 9vw, 95px);
-      }
-
-      .timer-settings {
-        width: 135px;
-        min-width: 135px;
-
-        padding: 4px;
-
-        border-radius: 11px;
-
-        gap: 2px;
-      }
-
-      .settings-title {
-        font-size: 12px;
-      }
-
-      .time-input {
-        width: 58px;
-
-        height: 25px;
-
-        font-size: 15px;
-
-        border-radius: 6px;
-      }
-
-      .time-unit {
-        font-size: 10px;
-      }
-
-      .set-time-button {
-        height: 25px;
-
-        font-size: 11px;
-
-        border-radius: 6px;
-      }
-
-      .control-area {
-        gap: 6px;
-      }
-
-      .control-button {
-        border-radius: 10px;
-
-        font-size: clamp(14px, 3vw, 23px);
-      }
-    }
-
-    /* =========================
-       小さい縦画面
-       ========================= */
-
-    @media (orientation: portrait) and (max-width: 500px) {
-
-      .app {
-        padding: 6px;
-        gap: 6px;
-      }
-
-      .teams {
-        gap: 6px;
-      }
-
-      .team {
-        padding: 6px;
       }
 
       .team-name {
-        font-size: clamp(18px, 5vw, 26px);
+        font-size: clamp(20px, 4vw, 40px);
       }
 
       .score {
-        font-size: clamp(70px, 22vw, 150px);
+        font-size: clamp(60px, 17vw, 170px);
       }
 
-      .hint {
-        font-size: 10px;
-      }
-
-      .timer-area {
-        padding: 6px;
-
-        grid-template-columns: minmax(0, 1fr) 125px;
-
-        gap: 6px;
+      .period {
+        font-size: clamp(18px, 3vw, 30px);
       }
 
       .timer {
-        font-size: clamp(42px, 13vw, 90px);
-      }
-
-      .timer-settings {
-        width: 125px;
-        min-width: 125px;
-
-        padding: 5px;
-
-        gap: 3px;
-      }
-
-      .settings-title {
-        font-size: 13px;
-      }
-
-      .time-input {
-        width: 60px;
-
-        height: 29px;
-
-        font-size: 17px;
-      }
-
-      .time-unit {
-        font-size: 11px;
-      }
-
-      .set-time-button {
-        height: 29px;
-
-        font-size: 12px;
-      }
-
-      .control-area {
-        gap: 6px;
-      }
-
-      .control-button {
-        border-radius: 10px;
-
-        font-size: clamp(15px, 4.5vw, 22px);
+        font-size: clamp(45px, 9vw, 100px);
       }
     }
-
   </style>
 </head>
 
@@ -529,137 +223,125 @@
 
   <div class="app">
 
-    <!-- 得点部分 -->
+    <!-- =========================
+         得点
+    ========================= -->
 
-    <div class="teams">
+    <div class="teams" id="teams">
 
-      <div class="team home"
-           onclick="scoreTap('home')">
-
-        <div class="team-name">
-          HOME
-        </div>
-
-        <div id="homeScore"
-             class="score">
-          0
-        </div>
-
-        <div class="hint">
-          タップ ＋1 ／ ダブルタップ −1
-        </div>
-
+      <div
+        class="team home"
+        onclick="scoreTap('home')"
+      >
+        <div class="team-name">HOME</div>
+        <div class="score" id="homeScore">0</div>
       </div>
 
-
-      <div class="team away"
-           onclick="scoreTap('away')">
-
-        <div class="team-name">
-          AWEY
-        </div>
-
-        <div id="awayScore"
-             class="score">
-          0
-        </div>
-
-        <div class="hint">
-          タップ ＋1 ／ ダブルタップ −1
-        </div>
-
+      <div
+        class="team away"
+        onclick="scoreTap('away')"
+      >
+        <div class="team-name">AWEY</div>
+        <div class="score" id="awayScore">0</div>
       </div>
 
     </div>
 
 
-    <!-- タイマー -->
+    <!-- =========================
+         タイマー
+    ========================= -->
 
     <div class="timer-area">
 
-      <div class="timer-main">
+      <div class="timer-box">
 
-        <div id="timer"
-             class="timer">
-          30:00
+        <div class="period" id="period">
+          前半
+        </div>
+
+        <div class="timer" id="timer">
+          25:00
         </div>
 
       </div>
 
 
-      <!-- 試合時間設定 -->
-
-      <div class="timer-settings">
+      <div class="settings">
 
         <div class="settings-title">
-          試合時間
+          時間設定
         </div>
 
-        <div class="time-row">
-
-          <input
-            id="minutesInput"
-            class="time-input"
-            type="number"
-            min="0"
-            max="99"
-            value="30">
-
-          <span class="time-unit">
-            分
-          </span>
-
+        <div class="time-label">
+          分
         </div>
 
+        <input
+          id="minutesInput"
+          class="time-input"
+          type="number"
+          min="0"
+          max="99"
+          value="25"
+        >
 
-        <div class="time-row">
-
-          <input
-            id="secondsInput"
-            class="time-input"
-            type="number"
-            min="0"
-            max="59"
-            value="0">
-
-          <span class="time-unit">
-            秒
-          </span>
-
+        <div class="time-label">
+          秒
         </div>
 
+        <input
+          id="secondsInput"
+          class="time-input"
+          type="number"
+          min="0"
+          max="59"
+          value="0"
+        >
 
-        <button
-          class="set-time-button"
-          onclick="setGameTime()">
-          設定
-        </button>
+        <div class="time-label">
+          ハーフタイム
+        </div>
+
+        <input
+          id="halftimeInput"
+          class="time-input"
+          type="number"
+          min="0"
+          max="99"
+          value="10"
+        >
 
       </div>
 
     </div>
 
 
-    <!-- 操作ボタン -->
+    <!-- =========================
+         操作
+    ========================= -->
 
-    <div class="control-area">
+    <div class="controls">
 
       <button
-        class="control-button start"
-        onclick="startTimer()">
-        ▶ START
+        class="control-button"
+        onclick="startTimer()"
+      >
+        START
       </button>
 
       <button
-        class="control-button pause"
-        onclick="pauseTimer()">
-        ⏸ PAUSE
+        class="control-button"
+        onclick="pauseTimer()"
+      >
+        PAUSE
       </button>
 
       <button
-        class="control-button reset"
-        onclick="resetGame()">
-        ↻ RESET
+        class="control-button"
+        onclick="resetTimer()"
+      >
+        RESET
       </button>
 
     </div>
@@ -670,228 +352,203 @@
   <script>
 
     /* =========================
-       得点
-       ========================= */
+       得点処理
+    ========================= */
 
-    let homeScore = 0;
-    let awayScore = 0;
+    let scores = {
+      home: 0,
+      away: 0
+    };
 
-    let homeTapTimer = null;
-    let awayTapTimer = null;
-
-    const DOUBLE_TAP_TIME = 250;
+    let lastTap = {
+      home: 0,
+      away: 0
+    };
 
 
     function scoreTap(team) {
 
-      if (team === 'home') {
+      const now = Date.now();
 
-        if (homeTapTimer !== null) {
+      if (now - lastTap[team] < 300) {
 
-          clearTimeout(homeTapTimer);
+        scores[team] = Math.max(
+          0,
+          scores[team] - 1
+        );
 
-          homeTapTimer = null;
+      } else {
 
-          minusScore('home');
+        scores[team]++;
 
-        } else {
-
-          homeTapTimer = setTimeout(function() {
-
-            homeTapTimer = null;
-
-            plusScore('home');
-
-          }, DOUBLE_TAP_TIME);
-        }
       }
 
+      lastTap[team] = now;
 
-      if (team === 'away') {
-
-        if (awayTapTimer !== null) {
-
-          clearTimeout(awayTapTimer);
-
-          awayTapTimer = null;
-
-          minusScore('away');
-
-        } else {
-
-          awayTapTimer = setTimeout(function() {
-
-            awayTapTimer = null;
-
-            plusScore('away');
-
-          }, DOUBLE_TAP_TIME);
-        }
-      }
+      document.getElementById(
+        team + 'Score'
+      ).textContent = scores[team];
     }
-
-
-    function plusScore(team) {
-
-      if (team === 'home') {
-
-        homeScore++;
-
-        document.getElementById(
-          'homeScore'
-        ).textContent = homeScore;
-      }
-
-
-      if (team === 'away') {
-
-        awayScore++;
-
-        document.getElementById(
-          'awayScore'
-        ).textContent = awayScore;
-      }
-    }
-
-
-    function minusScore(team) {
-
-      if (team === 'home') {
-
-        if (homeScore > 0) {
-          homeScore--;
-        }
-
-        document.getElementById(
-          'homeScore'
-        ).textContent = homeScore;
-      }
-
-
-      if (team === 'away') {
-
-        if (awayScore > 0) {
-          awayScore--;
-        }
-
-        document.getElementById(
-          'awayScore'
-        ).textContent = awayScore;
-      }
-    }
-
 
 
     /* =========================
        タイマー
-       ========================= */
-
-    let gameTimeSeconds = 30 * 60;
-
-    let remainingSeconds = gameTimeSeconds;
+    ========================= */
 
     let timerInterval = null;
+
+    let currentPeriod = 'first';
+
+    let remainingSeconds = 25 * 60;
+
+
+    function formatTime(totalSeconds) {
+
+      const minutes =
+        Math.floor(totalSeconds / 60);
+
+      const seconds =
+        totalSeconds % 60;
+
+      return (
+        String(minutes).padStart(2, '0')
+        + ':'
+        + String(seconds).padStart(2, '0')
+      );
+    }
+
+
+    /* =========================
+       前半・後半の左右変更
+    ========================= */
+
+    function updateTeamSides() {
+
+      const teams =
+        document.getElementById('teams');
+
+      if (currentPeriod === 'second') {
+
+        teams.classList.add('second-half');
+
+      } else {
+
+        teams.classList.remove('second-half');
+
+      }
+    }
 
 
     function updateTimerDisplay() {
 
-      const minutes =
-        Math.floor(remainingSeconds / 60);
-
-      const seconds =
-        remainingSeconds % 60;
-
-
       document.getElementById(
         'timer'
       ).textContent =
+        formatTime(remainingSeconds);
 
-        String(minutes).padStart(2, '0') +
 
-        ':' +
+      const periodText = {
+        first: '前半',
+        halftime: 'ハーフタイム',
+        second: '後半',
+        finished: '試合終了'
+      };
 
-        String(seconds).padStart(2, '0');
+
+      document.getElementById(
+        'period'
+      ).textContent =
+        periodText[currentPeriod];
+
+
+      updateTeamSides();
     }
 
 
+    /* =========================
+       試合時間取得
+    ========================= */
 
-    function setGameTime() {
+    function getMainTime() {
 
-      if (timerInterval !== null) {
+      let minutes = Number(
+        document.getElementById(
+          'minutesInput'
+        ).value
+      );
 
-        alert(
-          '試合中は時間を変更できません'
-        );
+      let seconds = Number(
+        document.getElementById(
+          'secondsInput'
+        ).value
+      );
 
-        return;
+
+      if (!Number.isFinite(minutes)) {
+        minutes = 25;
       }
 
-
-      let minutes =
-        parseInt(
-          document.getElementById(
-            'minutesInput'
-          ).value
-        );
-
-
-      let seconds =
-        parseInt(
-          document.getElementById(
-            'secondsInput'
-          ).value
-        );
-
-
-      if (isNaN(minutes)) {
-        minutes = 0;
-      }
-
-      if (isNaN(seconds)) {
+      if (!Number.isFinite(seconds)) {
         seconds = 0;
       }
 
 
-      minutes =
-        Math.max(
-          0,
-          Math.min(99, minutes)
-        );
+      minutes = Math.max(
+        0,
+        Math.min(
+          99,
+          Math.floor(minutes)
+        )
+      );
 
 
-      seconds =
-        Math.max(
-          0,
-          Math.min(59, seconds)
-        );
+      seconds = Math.max(
+        0,
+        Math.min(
+          59,
+          Math.floor(seconds)
+        )
+      );
 
 
-      document.getElementById(
-        'minutesInput'
-      ).value = minutes;
-
-
-      document.getElementById(
-        'secondsInput'
-      ).value = seconds;
-
-
-      gameTimeSeconds =
-        minutes * 60 + seconds;
-
-
-      remainingSeconds =
-        gameTimeSeconds;
-
-
-      updateTimerDisplay();
+      return minutes * 60 + seconds;
     }
 
+
+    /* =========================
+       ハーフタイム時間取得
+    ========================= */
+
+    function getHalftimeTime() {
+
+      let minutes = Number(
+        document.getElementById(
+          'halftimeInput'
+        ).value
+      );
+
+
+      if (!Number.isFinite(minutes)) {
+        minutes = 10;
+      }
+
+
+      minutes = Math.max(
+        0,
+        Math.min(
+          99,
+          Math.floor(minutes)
+        )
+      );
+
+
+      return minutes * 60;
+    }
 
 
     /* =========================
        START
-       ========================= */
+    ========================= */
 
     function startTimer() {
 
@@ -900,47 +557,21 @@
       }
 
 
-      if (remainingSeconds <= 0) {
+      if (currentPeriod === 'finished') {
         return;
       }
 
 
-      timerInterval =
-        setInterval(function() {
-
-          remainingSeconds--;
-
-          updateTimerDisplay();
-
-
-          if (remainingSeconds <= 0) {
-
-            pauseTimer();
-
-
-            if (navigator.vibrate) {
-
-              navigator.vibrate([
-                300,
-                150,
-                300
-              ]);
-            }
-
-
-            alert(
-              '試合時間終了'
-            );
-          }
-
-        }, 1000);
+      timerInterval = setInterval(
+        timerTick,
+        1000
+      );
     }
-
 
 
     /* =========================
        PAUSE
-       ========================= */
+    ========================= */
 
     function pauseTimer() {
 
@@ -953,44 +584,106 @@
     }
 
 
+    /* =========================
+       タイマー処理
+    ========================= */
+
+    function timerTick() {
+
+      if (remainingSeconds > 0) {
+
+        remainingSeconds--;
+
+        updateTimerDisplay();
+
+        return;
+      }
+
+
+      /* =========================
+         前半終了
+      ========================= */
+
+      if (currentPeriod === 'first') {
+
+        pauseTimer();
+
+        currentPeriod = 'halftime';
+
+        remainingSeconds =
+          getHalftimeTime();
+
+        updateTimerDisplay();
+
+        return;
+      }
+
+
+      /* =========================
+         ハーフタイム終了
+      ========================= */
+
+      if (currentPeriod === 'halftime') {
+
+        pauseTimer();
+
+        currentPeriod = 'second';
+
+        remainingSeconds =
+          getMainTime();
+
+        updateTimerDisplay();
+
+        return;
+      }
+
+
+      /* =========================
+         後半終了
+      ========================= */
+
+      if (currentPeriod === 'second') {
+
+        pauseTimer();
+
+        currentPeriod = 'finished';
+
+        remainingSeconds = 0;
+
+        updateTimerDisplay();
+
+        return;
+      }
+    }
+
 
     /* =========================
        RESET
-       ========================= */
+    ========================= */
 
-    function resetGame() {
+    function resetTimer() {
 
       pauseTimer();
 
-
-      homeScore = 0;
-      awayScore = 0;
-
-
-      document.getElementById(
-        'homeScore'
-      ).textContent = 0;
-
-
-      document.getElementById(
-        'awayScore'
-      ).textContent = 0;
-
+      currentPeriod = 'first';
 
       remainingSeconds =
-        gameTimeSeconds;
-
+        getMainTime();
 
       updateTimerDisplay();
     }
 
 
+    /* =========================
+       初期表示
+    ========================= */
+
     updateTimerDisplay();
 
 
     /* =========================
-       PWA
-       ========================= */
+       Service Worker
+    ========================= */
 
     if ('serviceWorker' in navigator) {
 
@@ -1011,6 +704,7 @@
 
         }
       );
+
     }
 
   </script>
