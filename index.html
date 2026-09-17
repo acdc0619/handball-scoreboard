@@ -52,7 +52,7 @@
       direction: ltr;
     }
 
-    /* 後半は左右反転 */
+    /* 後半は左右入れ替え */
     .teams.second-half {
       direction: rtl;
     }
@@ -68,7 +68,9 @@
       align-items: center;
 
       text-align: center;
+
       touch-action: manipulation;
+      cursor: pointer;
     }
 
     .home {
@@ -169,8 +171,8 @@
 
     .settings-button {
       width: 100%;
-
       margin-top: 4px;
+
       padding: 9px 6px;
 
       border: none;
@@ -183,6 +185,7 @@
       font-weight: bold;
 
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     .settings-button:active {
@@ -220,6 +223,7 @@
       font-weight: bold;
 
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     .control-button:active {
@@ -298,21 +302,17 @@
 
     <div class="teams" id="teams">
 
-      <!-- HOME -->
       <div
         class="team home"
         id="homeTeam"
-        onclick="handleScoreTap('home')"
       >
         <div class="team-name">HOME</div>
         <div class="score" id="homeScore">0</div>
       </div>
 
-      <!-- AWEY -->
       <div
         class="team aweY"
         id="aweYTeam"
-        onclick="handleScoreTap('aweY')"
       >
         <div class="team-name">AWEY</div>
         <div class="score" id="aweYScore">0</div>
@@ -336,7 +336,9 @@
       </div>
 
 
-      <!-- 時間設定 -->
+      <!-- =========================
+           時間設定
+           ========================= -->
 
       <div class="settings">
 
@@ -344,17 +346,10 @@
           時間設定
         </div>
 
-
         <div class="setting-row">
-          <div class="setting-label">
-            試合 分
-          </div>
-
-          <div class="setting-label">
-            試合 秒
-          </div>
+          <div class="setting-label">試合 分</div>
+          <div class="setting-label">試合 秒</div>
         </div>
-
 
         <div class="setting-row">
 
@@ -380,15 +375,9 @@
 
 
         <div class="setting-row">
-
-          <div class="setting-label">
-            ハーフタイム 分
-          </div>
-
+          <div class="setting-label">ハーフタイム 分</div>
           <div></div>
-
         </div>
-
 
         <div class="setting-row">
 
@@ -406,11 +395,11 @@
         </div>
 
 
-        <!-- 設定を反映 -->
+        <!-- 設定を反映する専用ボタン -->
 
         <button
           class="settings-button"
-          onclick="applySettings()"
+          id="applySettingsButton"
         >
           設定を反映
         </button>
@@ -421,30 +410,28 @@
 
 
     <!-- =========================
-         START / PAUSE / RESET
+         操作
          ========================= -->
 
     <div class="controls">
 
       <button
         class="control-button"
-        onclick="startTimer()"
+        id="startButton"
       >
         START
       </button>
 
-
       <button
         class="control-button"
-        onclick="pauseTimer()"
+        id="pauseButton"
       >
         PAUSE
       </button>
 
-
       <button
         class="control-button"
-        onclick="resetGame()"
+        id="resetButton"
       >
         RESET
       </button>
@@ -456,15 +443,34 @@
 
   <script>
 
-    /* =========================
+    /* ==================================================
        得点
-       ========================= */
+       ================================================== */
 
     let homeScore = 0;
     let aweYScore = 0;
 
+
+    /*
+     * ダブルタップ判定用
+     *
+     * 1回目
+     *   ↓
+     * 250ms待つ
+     *   ↓
+     * 2回目が来なければ +1
+     *
+     * 2回目が来たら -1
+     *
+     * これにより
+     * 「+1してから-1」
+     * にならないようにする
+     */
+
     let homeTapTimer = null;
     let aweYTapTimer = null;
+
+    const DOUBLE_TAP_DELAY = 250;
 
 
     function updateScores() {
@@ -474,25 +480,14 @@
 
       document.getElementById("aweYScore").textContent =
         aweYScore;
-
     }
 
 
-    /*
-     * 得点エリア
-     *
-     * 1回タップ  → +1
-     * 2回タップ  → -1
-     */
-
     function handleScoreTap(team) {
-
-      /* =========================
-         HOME
-         ========================= */
 
       if (team === "home") {
 
+        /* 2回目のタップ */
         if (homeTapTimer !== null) {
 
           clearTimeout(homeTapTimer);
@@ -503,30 +498,28 @@
           }
 
           updateScores();
-
-        } else {
-
-          homeTapTimer = setTimeout(() => {
-
-            homeScore++;
-
-            updateScores();
-
-            homeTapTimer = null;
-
-          }, 250);
-
+          return;
         }
 
+
+        /* 1回目のタップ */
+        homeTapTimer = setTimeout(() => {
+
+          homeScore++;
+
+          updateScores();
+
+          homeTapTimer = null;
+
+        }, DOUBLE_TAP_DELAY);
+
+        return;
       }
 
 
-      /* =========================
-         AWEY
-         ========================= */
-
       if (team === "aweY") {
 
+        /* 2回目のタップ */
         if (aweYTapTimer !== null) {
 
           clearTimeout(aweYTapTimer);
@@ -537,29 +530,53 @@
           }
 
           updateScores();
-
-        } else {
-
-          aweYTapTimer = setTimeout(() => {
-
-            aweYScore++;
-
-            updateScores();
-
-            aweYTapTimer = null;
-
-          }, 250);
-
+          return;
         }
 
-      }
 
+        /* 1回目のタップ */
+        aweYTapTimer = setTimeout(() => {
+
+          aweYScore++;
+
+          updateScores();
+
+          aweYTapTimer = null;
+
+        }, DOUBLE_TAP_DELAY);
+
+        return;
+      }
     }
 
 
-    /* =========================
+    /* ==================================================
+       タップイベント
+       ================================================== */
+
+    document
+      .getElementById("homeTeam")
+      .addEventListener("pointerup", function(event) {
+
+        event.preventDefault();
+
+        handleScoreTap("home");
+      });
+
+
+    document
+      .getElementById("aweYTeam")
+      .addEventListener("pointerup", function(event) {
+
+        event.preventDefault();
+
+        handleScoreTap("aweY");
+      });
+
+
+    /* ==================================================
        タイマー
-       ========================= */
+       ================================================== */
 
     let remainingSeconds = 25 * 60;
 
@@ -570,10 +587,6 @@
     let currentPeriod = "first";
 
 
-    /* =========================
-       時間表示
-       ========================= */
-
     function formatTime(totalSeconds) {
 
       const minutes =
@@ -582,13 +595,11 @@
       const seconds =
         totalSeconds % 60;
 
-
       return (
         String(minutes).padStart(2, "0") +
         ":" +
         String(seconds).padStart(2, "0")
       );
-
     }
 
 
@@ -600,13 +611,8 @@
       updatePeriodDisplay();
 
       updateTeamSides();
-
     }
 
-
-    /* =========================
-       前半 / ハーフタイム / 後半
-       ========================= */
 
     function updatePeriodDisplay() {
 
@@ -629,15 +635,9 @@
       } else if (currentPeriod === "finished") {
 
         display.textContent = "試合終了";
-
       }
-
     }
 
-
-    /* =========================
-       後半だけ左右反転
-       ========================= */
 
     function updateTeamSides() {
 
@@ -652,113 +652,112 @@
       } else {
 
         teams.classList.remove("second-half");
-
       }
-
     }
 
 
-    /* =========================
-       試合時間を取得
-       ========================= */
+    /* ==================================================
+       設定値取得
+       ================================================== */
 
     function getGameTime() {
 
       let minutes =
         Number(
           document.getElementById("minutesInput").value
-        ) || 0;
-
+        );
 
       let seconds =
         Number(
           document.getElementById("secondsInput").value
-        ) || 0;
+        );
+
+
+      if (!Number.isFinite(minutes)) {
+        minutes = 25;
+      }
+
+      if (!Number.isFinite(seconds)) {
+        seconds = 0;
+      }
 
 
       minutes =
         Math.max(
           0,
-          Math.min(99, minutes)
+          Math.min(99, Math.floor(minutes))
         );
 
 
       seconds =
         Math.max(
           0,
-          Math.min(59, seconds)
+          Math.min(59, Math.floor(seconds))
         );
 
 
       return minutes * 60 + seconds;
-
     }
 
-
-    /* =========================
-       ハーフタイム時間を取得
-       ========================= */
 
     function getHalftimeTime() {
 
       let minutes =
         Number(
           document.getElementById("halftimeInput").value
-        ) || 0;
+        );
+
+
+      if (!Number.isFinite(minutes)) {
+        minutes = 10;
+      }
 
 
       minutes =
         Math.max(
           0,
-          Math.min(99, minutes)
+          Math.min(99, Math.floor(minutes))
         );
 
 
       return minutes * 60;
-
     }
 
 
-    /* =========================
+    /* ==================================================
        設定を反映
-       ========================= */
+       ================================================== */
 
     function applySettings() {
 
+      /*
+       * タイマー動作中は設定変更しない
+       */
+
+      if (timerRunning) {
+        return;
+      }
+
+
       const gameTime =
         getGameTime();
-
 
       const halftimeTime =
         getHalftimeTime();
 
 
       /*
-       * 入力欄の値も正常な範囲に戻す
+       * 入力欄の値を正常な値に戻す
        */
 
       document.getElementById("minutesInput").value =
         Math.floor(gameTime / 60);
 
-
       document.getElementById("secondsInput").value =
         gameTime % 60;
 
-
       document.getElementById("halftimeInput").value =
         Math.floor(halftimeTime / 60);
-
-
-      /*
-       * タイマーが動いている間は
-       * 現在の時間を変更しない
-       */
-
-      if (timerRunning) {
-
-        return;
-
-      }
 
 
       /*
@@ -772,7 +771,6 @@
 
         remainingSeconds =
           gameTime;
-
       }
 
 
@@ -784,35 +782,35 @@
 
         remainingSeconds =
           halftimeTime;
-
       }
 
 
       updateTimerDisplay();
-
     }
 
 
-    /* =========================
+    /* ==================================================
        START
-       ========================= */
+       ================================================== */
 
     function startTimer() {
-
-      /*
-       * すでに動いていたら何もしない
-       */
 
       if (timerRunning) {
         return;
       }
 
 
+      if (currentPeriod === "finished") {
+        return;
+      }
+
+
       /*
-       * 試合終了後はSTARTしない
+       * 0秒のままSTARTされた場合
+       * そのままでは進まないので何もしない
        */
 
-      if (currentPeriod === "finished") {
+      if (remainingSeconds <= 0) {
         return;
       }
 
@@ -824,10 +822,6 @@
         setInterval(() => {
 
 
-          /*
-           * 残り時間あり
-           */
-
           if (remainingSeconds > 0) {
 
             remainingSeconds--;
@@ -835,7 +829,6 @@
             updateTimerDisplay();
 
             return;
-
           }
 
 
@@ -850,9 +843,9 @@
           timerRunning = false;
 
 
-          /* =========================
-             前半終了
-             ========================= */
+          /*
+           * 前半終了
+           */
 
           if (currentPeriod === "first") {
 
@@ -864,13 +857,12 @@
             updateTimerDisplay();
 
             return;
-
           }
 
 
-          /* =========================
-             ハーフタイム終了
-             ========================= */
+          /*
+           * ハーフタイム終了
+           */
 
           if (currentPeriod === "halftime") {
 
@@ -882,13 +874,12 @@
             updateTimerDisplay();
 
             return;
-
           }
 
 
-          /* =========================
-             後半終了
-             ========================= */
+          /*
+           * 後半終了
+           */
 
           if (currentPeriod === "second") {
 
@@ -899,18 +890,15 @@
             updateTimerDisplay();
 
             return;
-
           }
 
-
         }, 1000);
-
     }
 
 
-    /* =========================
+    /* ==================================================
        PAUSE
-       ========================= */
+       ================================================== */
 
     function pauseTimer() {
 
@@ -919,18 +907,15 @@
         clearInterval(timerInterval);
 
         timerInterval = null;
-
       }
 
-
       timerRunning = false;
-
     }
 
 
-    /* =========================
+    /* ==================================================
        RESET
-       ========================= */
+       ================================================== */
 
     function resetGame() {
 
@@ -942,7 +927,7 @@
 
 
       /*
-       * 得点を0に戻す
+       * 点数を0に戻す
        */
 
       homeScore = 0;
@@ -968,22 +953,45 @@
       updateScores();
 
       updateTimerDisplay();
-
     }
 
 
-    /* =========================
+    /* ==================================================
+       ボタンイベント
+       ================================================== */
+
+    document
+      .getElementById("applySettingsButton")
+      .addEventListener("click", applySettings);
+
+
+    document
+      .getElementById("startButton")
+      .addEventListener("click", startTimer);
+
+
+    document
+      .getElementById("pauseButton")
+      .addEventListener("click", pauseTimer);
+
+
+    document
+      .getElementById("resetButton")
+      .addEventListener("click", resetGame);
+
+
+    /* ==================================================
        初期表示
-       ========================= */
+       ================================================== */
 
     updateScores();
 
     updateTimerDisplay();
 
 
-    /* =========================
+    /* ==================================================
        PWA
-       ========================= */
+       ================================================== */
 
     if ("serviceWorker" in navigator) {
 
