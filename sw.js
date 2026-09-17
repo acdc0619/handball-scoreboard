@@ -1,4 +1,4 @@
-const CACHE_NAME = 'handball-scoreboard-v2';
+const CACHE_NAME = 'handball-scoreboard-v3';
 
 const ASSETS = [
   './',
