@@ -901,70 +901,91 @@
        タイマー開始
        ========================= */
 
-    function startTimer() {
+function startTimer() {
 
-      if (timerRunning) {
-        return;
-      }
+  if (timerRunning) {
+    return;
+  }
+
+  if (currentPeriod === "finished") {
+    return;
+  }
+
+  if (remainingSeconds <= 0) {
+    return;
+  }
+
+  timerRunning = true;
+
+  timerInterval =
+    setInterval(() => {
+
+      if (remainingSeconds > 0) {
+
+        remainingSeconds--;
+
+        updateTimerDisplay();
+
+        /*
+          タイマーが0になったら
+          次の状態へ移行
+        */
+
+        if (remainingSeconds === 0) {
+
+          clearInterval(timerInterval);
+
+          timerInterval = null;
+
+          timerRunning = false;
 
 
-      if (currentPeriod === "finished") {
-        return;
-      }
+          /* =========================
+             前半終了
+             → ハーフタイムへ
+             → そのまま自動スタート
+             ========================= */
 
+          if (currentPeriod === "first") {
 
-      if (remainingSeconds <= 0) {
-        return;
-      }
+            currentPeriod = "halftime";
 
-
-      timerRunning = true;
-
-
-      timerInterval =
-        setInterval(() => {
-
-
-          if (remainingSeconds > 0) {
-
-            remainingSeconds--;
+            remainingSeconds =
+              getHalftimeTime();
 
             updateTimerDisplay();
 
-
             /*
-              0になった瞬間に
-              次の状態へ移行
+              ハーフタイムを
+              自動で続けてカウントダウン
             */
 
-            if (remainingSeconds === 0) {
+            timerRunning = true;
 
-              clearInterval(timerInterval);
+            timerInterval =
+              setInterval(() => {
 
-              timerInterval = null;
+                if (remainingSeconds > 0) {
 
-              timerRunning = false;
+                  remainingSeconds--;
 
+                  updateTimerDisplay();
 
-              /* 前半終了 */
-
-              if (currentPeriod === "first") {
-
-                currentPeriod = "halftime";
-
-                remainingSeconds =
-                  getHalftimeTime();
-
-                updateTimerDisplay();
-
-                return;
-
-              }
+                  return;
+                }
 
 
-              /* ハーフタイム終了 */
+                /*
+                  ハーフタイム終了
+                  → 後半へ
+                  → ここでは停止
+                */
 
-              if (currentPeriod === "halftime") {
+                clearInterval(timerInterval);
+
+                timerInterval = null;
+
+                timerRunning = false;
 
                 currentPeriod = "second";
 
@@ -973,32 +994,35 @@
 
                 updateTimerDisplay();
 
-                return;
+              }, 1000);
 
-              }
-
-
-              /* 後半終了 */
-
-              if (currentPeriod === "second") {
-
-                currentPeriod = "finished";
-
-                remainingSeconds = 0;
-
-                updateTimerDisplay();
-
-                return;
-
-              }
-
-            }
-
+            return;
           }
 
-        }, 1000);
 
-    }
+          /* =========================
+             後半終了
+             → 試合終了
+             ========================= */
+
+          if (currentPeriod === "second") {
+
+            currentPeriod = "finished";
+
+            remainingSeconds = 0;
+
+            updateTimerDisplay();
+
+            return;
+          }
+
+        }
+
+      }
+
+    }, 1000);
+
+}
 
 
     /* =========================
